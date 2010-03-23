@@ -1,0 +1,26 @@
+
+h1. Thin Memory
+
+p. A munin plugin to monitor memory size of each individual thin process.
+p. For Linux ONLY ! DOES NOT WORK on OSX, Solaris or BSD, because this script relies on proc filesystem
+
+#!http://muninexchange.projects.linpro.no/graph.php/657-1.png!
+
+
+
+h1. Thin Threads
+
+p. A munin plugin for Linux to monitor how many threads per thin process.
+p. For Linux ONLY ! DOES NOT WORK on OSX, Solaris or BSD, because this script relies on proc filesystem
+
+#!http://muninexchange.projects.linpro.no/graph.php/658-1.png!
+
+
+
+h1. Thin Peak Memory (High Water Mark)
+
+p. A munin plugin for Linux to monitor the maximum memory size that each individual thin process has reached.
+p. For Linux ONLY ! DOES NOT WORK on OSX, Solaris or BSD, because this script relies on proc filesystem
+
+#!http://muninexchange.projects.linpro.no/graph.php/659-1.png!
+
