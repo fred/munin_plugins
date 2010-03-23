@@ -1,0 +1,103 @@
+#!/usr/bin/env ruby
+#############################################################
+# thin_threads - A munin plugin for Linux to monitor 
+#                 how many threads per thin process
+# 
+# For Linux ONLY !
+# DOES NOT WORK on OSX, Solaris or BSD.
+# only linux, because this script relies on proc filesystem
+#
+#############################################################
+#
+# Based on original code and ideas from:
+# thin_process_memory - A munin plugin to monitor memory size of 
+#                          each individual thin process
+# Copyright (C) 2007 Ben VandenBos and Avvo, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 
+# as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Original Author: Ben VandenBos
+# Contributors: Adam Jacob (<adam@hjksolutions.com>)
+#               Ryan Woodrum 
+#               Matthias Marschall (mm@agileweboperations.com)
+#
+# Thanks Matthias to help improve this code and made much faster
+#
+#%# family=auto
+#%# capabilities=autoconf
+
+module Munin
+  class ThinThreads
+    
+    def run
+      pids = get_pids()
+      port_list = Hash.new
+      pids.sort.each do |pid, port|
+        res = (get_threads(pid).to_i)
+        puts "thin_#{port}.value #{res}"
+      end
+    end
+    
+    def get_threads(pid)
+      res = `grep "Threads" /proc/#{pid}/status`.split[1]
+      if res.match("cannot access")
+        return nil
+      else
+        return res
+      end
+    end
+    
+    def get_pids
+      pids_ports = []
+      Dir["/var/www/apps/*/shared/pids/thin*.pid"].each do |pid_file|
+        pid = `cat #{pid_file}`
+        port = pid_file[/\d\d\d\d/]
+        pids_ports << [pid,port]
+      end
+      pids_ports
+    end
+
+    def autoconf
+      get_pids().length > 0
+    end
+    
+  end
+end
+
+mpm = Munin::ThinThreads.new
+
+case ARGV[0]
+when "config"
+  puts "graph_title Thin Threads"
+  puts "graph_vlabel Threads"
+  puts "graph_category Thin"
+  puts "graph_args -l 0"
+  puts "graph_scale yes"
+  puts "graph_info Tracks how many threads per thin processes"
+  mpm.get_pids.sort.each do |pid,port|
+    puts "thin_#{port}.label thin_#{port}"
+    puts "thin_#{port}.info Threads per Thin process"
+    puts "thin_#{port}.type GAUGE"
+    puts "thin_#{port}.min 0"
+  end
+when "autoconf"
+  if mpm.autoconf
+    puts "yes"
+    exit 0
+  end
+  puts "no"
+  exit 1
+else
+  mpm.run
+end
