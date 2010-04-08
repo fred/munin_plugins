@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby1.9
+#############################################################
+# http_reponse - A munin plugin for Linux to monitor 
+#                the response time of page loads
+#
+#############################################################
+#
+#
+# Author: Frederico Araujo
+#
+#%# family=auto
+#%# capabilities=autoconf
+
+
+require 'net/http'
+require 'benchmark'
+
+
+module Munin
+  class ResponseTime
+    
+    def run
+      @urls = [
+        {:url => "http://theultralounge.com/sessions/new", :name => "sessions_new"},
+        {:url => "http://theultralounge.com/registrations/new", :name => "registrations_new"},
+        {:url => "http://theultralounge.com/events/2", :name => "events_2"},
+        {:url => "http://theultralounge.com/events/2/orders/new", :name => "2_orders_new"}
+      ]
+      @urls.each do |url|
+        timeoute = Benchmark.measure { 
+          response = Net::HTTP.get(URI.parse(url[:url]))
+        }
+        name = url[:name]
+        time = timeoute.real.round(1)
+        puts "#{name}.value #{time}"
+      end
+    end
+    
+    def autoconf
+      true
+    end
+    
+  end
+end
+
+mpm = Munin::ResponseTime.new
+
+case ARGV[0]
+when "config"
+  #puts "#{ENV['RAILS_ENV']}"
+  puts "graph_title HTTP Response Time"
+  puts "graph_vlabel response (Sec)"
+  puts "graph_category network"
+  puts "graph_scale yes"
+  puts "graph_info HTTP Response Time"
+  
+  puts "response_time.label Response"
+  puts "response_time.info Response Time"
+  puts "response_time.draw AREA"
+  puts "response_time.type DERIVE"
+  puts "response_time.min 0"
+  
+when "autoconf"
+  if mpm.autoconf
+    puts "yes"
+    exit 0
+  end
+  puts "no"
+  exit 1
+else
+  mpm.run
+end
