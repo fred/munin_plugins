@@ -19,14 +19,19 @@ require 'benchmark'
 module Munin
   class ResponseTime
     
-    def run
-      @urls = [
+    # TODO: pull this from the config file
+    def get_urls
+      [
         {:url => "http://theultralounge.com/sessions/new", :name => "sessions_new"},
         {:url => "http://theultralounge.com/registrations/new", :name => "registrations_new"},
         {:url => "http://theultralounge.com/events/2", :name => "events_2"},
         {:url => "http://theultralounge.com/events/2/orders/new", :name => "2_orders_new"}
       ]
-      @urls.each do |url|
+    end
+    
+    def run
+      urls = get_urls
+      urls.each do |url|
         timeoute = Benchmark.measure { 
           response = Net::HTTP.get(URI.parse(url[:url]))
         }
@@ -54,11 +59,13 @@ when "config"
   puts "graph_scale yes"
   puts "graph_info HTTP Response Time"
   
-  puts "response_time.label Response"
-  puts "response_time.info Response Time"
-  puts "response_time.draw AREA"
-  puts "response_time.type DERIVE"
-  puts "response_time.min 0"
+  mpm.get_urls.each do |url|
+    puts "#{url[:name]}.label Response"
+    puts "#{url[:name]}.info Response Time"
+    puts "#{url[:name]}.draw AREA"
+    puts "#{url[:name]}.type DERIVE"
+    puts "#{url[:name]}.min 0"
+  end
   
 when "autoconf"
   if mpm.autoconf
