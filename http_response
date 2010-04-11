@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby1.9
+#!/opt/ruby1.9/bin/ruby
 #############################################################
 # http_reponse - A munin plugin for Linux to monitor 
 #                the response time of page loads
@@ -60,7 +60,7 @@ when "config"
   puts "graph_info HTTP Response Time"
   
   mpm.get_urls.each do |url|
-    puts "#{url[:name]}.label Response"
+    puts "#{url[:name]}.label #{url[:name]}"
     puts "#{url[:name]}.info Response Time"
     puts "#{url[:name]}.draw AREA"
     puts "#{url[:name]}.type DERIVE"
