@@ -36,7 +36,7 @@ module Munin
           response = Net::HTTP.get(URI.parse(url[:url]))
         }
         name = url[:name]
-        time = timeoute.real.round(1)
+        time = (timeoute.real.round(2)*1000).to_i
         puts "#{name}.value #{time}"
       end
     end
@@ -53,15 +53,15 @@ mpm = Munin::ResponseTime.new
 case ARGV[0]
 when "config"
   #puts "#{ENV['RAILS_ENV']}"
-  puts "graph_title HTTP Response Time"
-  puts "graph_vlabel response (Sec)"
+  puts "graph_title HTTP Response Time (ms)"
+  puts "graph_vlabel response (ms)"
   puts "graph_category network"
   puts "graph_scale yes"
   puts "graph_info HTTP Response Time"
   
   mpm.get_urls.each do |url|
     puts "#{url[:name]}.label #{url[:name]}"
-    puts "#{url[:name]}.info Response Time"
+    puts "#{url[:name]}.info Response Time (ms)"
     puts "#{url[:name]}.draw AREA"
     puts "#{url[:name]}.type DERIVE"
     puts "#{url[:name]}.min 0"
