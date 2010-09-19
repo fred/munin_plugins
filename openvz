@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+#############################################################
+# openvz - A munin plugin to monitor OpenVZ Stats of a VM
+#
+# For Linux OpenVZ Container ONLY !#
+#############################################################
+# Check that 'held' is less than 'barrier' 
+#   held = current count
+#   barrier = soft limit
+# only checking for:
+#   privvmpages @file[1] 
+#   oomguarpages @file[7] 
+# 
+# oomguarpages : 
+#   The out-of-memory guarantee, in pages. 
+#   Any VE process will not be killed even in case of heavy 
+#   memory shortage if the current memory consumption 
+#   (including both physical memory and swap) 
+#   does not reach the oomguarpages barrier.
+#
+# privvmpages: 
+#  The size of private (or potentially private) memory allocated by an application. 
+#  The memory that is always shared among different applications 
+#  is not included in this resource parameter.
+# 
+# Sources: 
+#  - http://wiki.openvz.org/UBC_secondary_parameters
+#  - http://wiki.vpslink.com/Meaning_of_the_/proc/user_beancounters_Values
+#%# family=auto
+#%# capabilities=autoconf
+
+module Munin
+  class OpenVZ
+    
+    PROC_FILE="/tmp/user_beancounters"
+    
+    def run
+      read_file
+      pvm = get_privvmpages
+      oom = get_oomguarpages
+      #puts "#{pvm[0]}: #{pvm[1]}/#{pvm[2]} (#{pvm[3]}% of limit)"
+      #puts "#{oom[0]}: #{oom[1]}/#{oom[2]} (#{oom[3]}% of limit)"
+      puts "privvmpages.value #{pvm[3]}"
+      puts "oomguarpages.value #{oom[3]}"
+    end
+    
+    def read_file
+      exit unless File.exists?(PROC_FILE)
+      @file = File.read(PROC_FILE).split("\n")
+      # Delete the first 3 lines, which are irrelevant to us.
+      @file.delete_at(0)
+      @file.delete_at(0)
+      @file.delete_at(0)
+    end
+    
+    # privvmpages [name, current, limit, percent]
+    def get_privvmpages
+      @privvmpages = @file[1].split
+      name = @privvmpages[0]
+      current = @privvmpages[1].to_i
+      limit = @privvmpages[3].to_i
+      percent = ((current.to_f/limit)*100).ceil
+      [name,current,limit,percent]
+    end
+    
+    # oomguarpages [name, current, limit, percent]
+    def get_oomguarpages
+      @oomguarpages = @file[7].split
+      name = @oomguarpages[0]
+      current = @oomguarpages[1].to_i
+      limit = @oomguarpages[3].to_i
+      percent = ((current.to_f/limit)*100).ceil
+      [name,current,limit,percent]
+    end
+    
+    def autoconf
+      File.exists?(PROC_FILE)
+    end
+    
+  end
+end
+
+ovz = Munin::OpenVZ.new
+
+case ARGV[0]
+when "config"
+  
+  puts "graph_title OpenVZ Memory stats"
+  puts "graph_vlabel %"
+  puts "graph_category OpenVZ"
+  puts "graph_args --upper-limit 100 -l"
+  puts "graph_scale no"
+  puts "graph_info Tracks % of OpenVZ Node Memory"
+  
+  puts "privvmpages.label privvmpages"
+  puts "privvmpages.info Private VM"
+  puts "privvmpages.warning 75"
+  puts "privvmpages.critical 90"
+  
+  puts "oomguarpages.label oomguarpages"
+  puts "oomguarpages.info The out-of-memory guarantee"
+  puts "oomguarpages.warning 65"
+  puts "oomguarpages.critical 80"
+  
+when "autoconf"
+  if ovz.autoconf
+    puts "yes"
+    exit 0
+  end
+  puts "no"
+  exit 1
+else
+  ovz.run
+end
+
+
