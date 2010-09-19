@@ -96,7 +96,7 @@ case ARGV[0]
 when "config"
   
   puts "graph_title OpenVZ Memory stats"
-  puts "graph_vlabel %"
+  puts "graph_vlabel percent"
   puts "graph_category OpenVZ"
   puts "graph_args --upper-limit 100 -l"
   puts "graph_scale no"
