@@ -26,13 +26,23 @@
 # Sources: 
 #  - http://wiki.openvz.org/UBC_secondary_parameters
 #  - http://wiki.vpslink.com/Meaning_of_the_/proc/user_beancounters_Values
+# 
+# Installation:
+#  - put this file in /etc/munin/plugins
+#  - make executable: 
+#     chmod 755 /etc/munin/plugins/openvz
+#  - Edit /etc/munin/plugin-conf.d/munin-node and add:
+#    [openvz]
+#    user root
+# 
+
 #%# family=auto
 #%# capabilities=autoconf
 
 module Munin
   class OpenVZ
     
-    PROC_FILE="/tmp/user_beancounters"
+    PROC_FILE="/proc/user_beancounters"
     
     def run
       read_file
