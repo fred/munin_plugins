@@ -4,7 +4,7 @@ A munin plugin to monitor memory size of each individual thin process.
 
 For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
 
-!http://frederico-araujo.com/wordpress/wp-content/munin/thin_memory-week.png!
+!http://frederico-araujo.com/wp-content/munin/thin_memory-week.png!
 
 
 h2. Thin Threads
@@ -13,7 +13,7 @@ A munin plugin for Linux to monitor how many threads per thin process.
 
 For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
 
-!http://frederico-araujo.com/wordpress/wp-content/munin/thin_threads-week.png!
+!http://frederico-araujo.com/wp-content/munin/thin_threads-week.png!
 
 
 
@@ -23,7 +23,7 @@ A munin plugin for Linux to monitor the maximum memory size that each individual
 
 For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
 
-!http://frederico-araujo.com/wordpress/wp-content/munin/thin_peak_memory-week.png!
+!http://frederico-araujo.com/wp-content/munin/thin_peak_memory-week.png!
 
 
 h2. OpenVZ
@@ -32,5 +32,5 @@ A munin plugin to monitor OpenVZ Stats of a VM.
 
 It checks for privvmpages and oomguarpages using /proc/user_beancounters
 
-!http://frederico-araujo.com/wordpress/wp-content/munin/OpenVZ_Memory_stats.png!
+!http://frederico-araujo.com/wp-content/munin/OpenVZ_Memory_stats.png!
 
