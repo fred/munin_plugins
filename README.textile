@@ -1,29 +1,35 @@
+h2. Thin Memory
 
-h1. Thin Memory
+A munin plugin to monitor memory size of each individual thin process.
 
-p. A munin plugin to monitor memory size of each individual thin process.
-
-p. For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
+For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
 
 !http://muninexchange.projects.linpro.no/graph.php/657-1.png!
 
 
 
-h1. Thin Threads
+h2. Thin Threads
 
-p. A munin plugin for Linux to monitor how many threads per thin process.
+A munin plugin for Linux to monitor how many threads per thin process.
 
-p. For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
+For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
 
 !http://muninexchange.projects.linpro.no/graph.php/658-1.png!
 
 
 
-h1. Thin Peak Memory (High Water Mark)
+h2. Thin Peak Memory (High Water Mark)
 
-p. A munin plugin for Linux to monitor the maximum memory size that each individual thin process has reached.
+A munin plugin for Linux to monitor the maximum memory size that each individual thin process has reached.
 
-p. For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
+For Linux ONLY. Does not work on OSX, Solaris or BSD, because this script relies on proc filesystem.
 
 !http://muninexchange.projects.linpro.no/graph.php/659-1.png!
+
+
+h2. OpenVZ
+
+A munin plugin to monitor OpenVZ Stats of a VM. 
+
+It checks for privvmpages and oomguarpages using /proc/user_beancounters
 
