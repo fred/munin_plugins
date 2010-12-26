@@ -1,0 +1,104 @@
+#!/usr/bin/env ruby
+#############################################################
+# openvz - A munin plugin to monitor OpenVZ Stats of a VM
+#
+# For Linux OpenVZ Container ONLY !#
+#############################################################
+# 
+# Installation:
+# wget -O - http://www.lowendbox.com/scripts/vzfree.c 2>/dev/null | gcc -o /usr/local/bin/vzfree -x c -
+# 
+# Source:
+# http://www.lowendbox.com/blog/how-to-tell-your-openvz-vps-is-swapping/#comment-14159
+# 
+# Credits: 
+# LowEndAdmin, Frederico Araujo
+#
+#
+
+#%# family=auto
+#%# capabilities=autoconf
+
+module Munin
+  class OpenVZ
+    
+    BIN_FILE="/usr/local/bin/vzfree"
+
+    def run_vzfree
+      @vzfree = `#{BIN_FILE}`.chomp.split("\n")
+    end
+
+
+    def allocate_max
+      @vzfree[2].split[1].gsub(/M/,"")
+    end
+    def allocate_used
+      @vzfree[2].split[2].gsub(/M/,"")
+    end
+    
+    def commit_max
+      @vzfree[3].split[1].gsub(/M/,"")
+    end
+    def commit_used
+      @vzfree[3].split[2].gsub(/M/,"")
+    end
+    
+    def swap_used
+      @vzfree[4].split[1].gsub(/M/,"")
+    end
+    
+    def run
+      run_vzfree
+      puts "allocate_max.value #{allocate_max}"
+      puts "allocate_used.value #{allocate_used}"
+      puts "commit_max.value #{commit_max}"
+      puts "commit_used.value #{commit_used}"
+      puts "swap_used.value #{swap_used}"
+    end
+    
+    def autoconf
+      File.exists?(BIN_FILE)
+    end
+    
+  end
+end
+
+ovz = Munin::OpenVZ.new
+ovz.run_vzfree
+
+case ARGV[0]
+when "config"
+  puts "graph_title OpenVZ Memory stats V2"
+  puts "graph_args -r --lower-limit 0 --upper-limit #{ovz.allocate_max.to_i}"
+  puts "graph_vlabel MB"
+  puts "graph_category OpenVZ"
+  puts "graph_scale no"
+  puts "graph_info Tracks Usage and Overcommitting of OpenVZ Memory"
+  
+  puts "allocate_max.label Allocate Max"
+  puts "allocate_max.info Allocate Max"
+  
+  puts "allocate_used.label Allocate Used"
+  puts "allocate_used.info Allocate Used"
+  
+  puts "commit_max.label Commit Max"
+  puts "commit_max.info Commit Max"
+  
+  puts "commit_used.label Commit Used"
+  puts "commit_used.info Commit Used"
+  
+  puts "swap_used.label Swap"
+  puts "swap_used.info Swap Used"
+  
+when "autoconf"
+  if ovz.autoconf
+    puts "yes"
+    exit 0
+  end
+  puts "no"
+  exit 1
+else
+  ovz.run
+end
+
+
