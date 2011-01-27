@@ -7,6 +7,9 @@
 # 
 # Installation:
 # wget -O - http://www.lowendbox.com/scripts/vzfree.c 2>/dev/null | gcc -o /usr/local/bin/vzfree -x c -
+# Add to /etc/munin/plugin-conf.d/munin-node
+#  [openvz*]
+#  user root
 # 
 # Source:
 # http://www.lowendbox.com/blog/how-to-tell-your-openvz-vps-is-swapping/#comment-14159

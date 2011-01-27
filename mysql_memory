@@ -44,7 +44,7 @@ module Munin
     end
     
     def get_pid
-      pid = `pgrep mysqld`.split[0].chomp.to_i
+      pid = `pgrep -u mysql mysqld`.split[0].chomp.to_i
       pid
     end
 
